@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mycompany.qlzf_hous_keeper.mapper.ManageForNeedsMapper">
+    <select id="get_count" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+       SELECT phone_number,time,a.id,b.id shop_id,a.real_name FROM `user_info` a INNER JOIN user_wantshop b WHERE a.id=b.user_id AND a.user_belong =#{id} AND b.status=0;
+    </select>
+
+    <select id="getUsernameAndTel" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+       SELECT a.real_name,a.phone_number from user_info a
+       INNER JOIN
+       (SELECT user_id FROM `user_wantshop` WHERE id=#{shop_id})b
+       WHERE a.id = b.user_id;
+    </select>
+</mapper>

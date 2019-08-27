@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mycompany.qlzf_hous_keeper.mapper.ManageMapper">
+    <select id="get_count" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+       SELECT phone_number,time,a.id,b.id shop_id,b.name FROM `user_info` a INNER JOIN user_shop b WHERE a.id=b.user_id AND user_belong =#{id} and b.status = 1;
+    </select>
+
+    <select id="getInfo_todayUser_shop" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+       SELECT id FROM `user_shop` WHERE time=#{day};
+    </select>
+
+    <select id="search_listInfo" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        SELECT * from
+        (SELECT phone_number,time,a.id,b.id shop_id,b.name,b.status FROM `user_info` a INNER JOIN user_shop b WHERE
+        a.id=b.user_id AND user_belong =#{worker_id}) a
+        WHERE status =#{status}
+        <if test="start_time!=null and start_time !=''">
+            and time &gt; #{start_time}
+        </if>
+
+        <if test="end_time!=null and end_time !=''">
+            and time &lt; #{end_time}
+        </if>
+
+        <if test="user_name !='%null%' and user_name !='%%'">
+            and name like #{user_name}
+        </if>
+
+        <if test="phone_number!=null and phone_number !=''">
+            and phone_number=#{phone_number}
+        </if>
+
+        <if test="publish_time!=null and publish_time !=''">
+            and time =#{publish_time}
+        </if>
+
+    </select>
+
+    <select id="search_listInfodDZ" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        SELECT * from
+        ( SELECT phone_number,time,a.id,b.id shop_id,a.real_name name,b.`status` FROM
+        `user_info` a
+        INNER JOIN
+        user_wantshop b
+        WHERE a.id=b.user_id AND a.user_belong =#{worker_id}) a
+        WHERE status =#{status}
+        <if test="start_time!=null and start_time !=''">
+            and time &gt; #{start_time}
+        </if>
+
+        <if test="end_time!=null and end_time !=''">
+            and time &lt; #{end_time}
+        </if>
+
+        <if test="user_name !='%null%' and user_name !='%%'">
+            and real_name like #{user_name}
+        </if>
+
+        <if test="phone_number!=null and phone_number !=''">
+            and phone_number=#{phone_number}
+        </if>
+
+        <if test="publish_time!=null and publish_time !=''">
+            and time =#{publish_time}
+        </if>
+
+    </select>
+
+    <select id="getInfo_todayUser_wantshop" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+       SELECT id FROM `user_wantshop` WHERE time=#{day};
+    </select>
+
+    <select id="getUser_id_byId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT * FROM `user_shop` WHERE id=${shop_id}
+    </select>
+
+    <select id="checkUser_if_exist" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT * FROM `user_info` WHERE phone_number=#{phone_number}
+    </select>
+
+    <select id="checkFollow" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT user_followType FROM `woker_user_follow` b INNER JOIN (SELECT id from user_info WHERE phone_number=#{phone_number}) a WHERE b.user_id= a.id;
+    </select>
+
+    <select id="check_if_shenghe" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT * FROM `user_shop` WHERE id=${shop_id} and status=1;
+    </select>
+
+    <update id="update_title" parameterType="java.util.HashMap">
+        update user_shop set title=#{title}
+        <if test="status!=null and status !=''">
+            ,status=${status}
+        </if>
+        where id=${shop_id}
+    </update>
+
+    <update id="repair" parameterType="java.util.HashMap">
+        update user_shop set status=${status}  where id=${shop_id}
+    </update>
+
+    <insert id="inser_user" parameterType="java.util.HashMap" keyProperty="id" useGeneratedKeys="true">
+        insert into user_info  (user_name,real_name,sex,phone_number,user_belong,user_from,type) values (#{user_name},#{user_name},#{sex},#{phone_number},#{worker_id},#{from},#{type});
+    </insert>
+
+    <update id="innert_failed_reasons" parameterType="java.util.HashMap">
+        update user_shop set status = 5,info=#{info},shenghe_time =#{time} where id=#{shop_id};
+    </update>
+
+    <insert id="insert_woker_user_follow" parameterType="java.util.HashMap" >
+        insert into woker_user_follow  (belong_worker_id,user_id,first_time,info,info_by,user_follweType,appointment_time,follow_time,follow_status) values (#{worker_id},#{id},#{follow_time},#{info},#{info_by},1,#{appointment_time},#{follow_time},1);
+    </insert>
+    <update id="updata_shop_status" parameterType="java.util.HashMap">
+        update user_shop set status = 3 where id=#{shop_id};
+    </update>
+
+    <update id="updata_wantShop_status" parameterType="java.util.HashMap">
+        update user_wantshop set status = 2 where id=#{shop_id};
+    </update>
+
+    <update id="upadate_woker_user_follow" parameterType="java.util.HashMap">
+        update woker_user_follow set
+        info = #{info}
+        ,follow_time=#{follow_time}
+        ,follow_shop_or_wantShop =#{title}
+        ,info_by =#{info_by}
+        ,user_followType =#{user_followType}
+        <if test="complete_time !=null and complete_time !=''">
+            ,complete_time =#{complete_time}
+            ,complete_bonus =#{complete_bonus}
+        </if>
+        <if test="appointment_time !=null and appointment_time !=''">
+            ,appointment_time =#{appointment_time}
+        </if>
+        where id=#{shop_id};
+    </update>
+
+
+    <select id="search_FollowInfolist" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        SELECT a.id user_id, b.id,a.real_name user_name,a.phone_number,a.sex,a.type user_type,a.user_from,b.woker_name,b.type woker_type,b.follow_status,b.user_followType from user_info a
+        INNER  JOIN
+        (SELECT a.id,a.user_id,a.user_followType,a.follow_status,b.`name` woker_name,b.type,a.info FROM `woker_user_follow` a INNER JOIN qlzf_shenghe b where a.belong_worker_id=b.id and a.belong_worker_id=#{worker_id})b
+        WHERE
+        <if test="user_name !='%null%' and user_name !='%%'">
+            a.user_name like #{user_name} and
+        </if>
+        <if test="phone_number!=null and phone_number !=''">
+            a.phone_number = #{phone_number} and
+        </if>
+        <if test="info !='%null%' and info !='%%'">
+            b.info like #{info} and
+        </if>
+        a.id=b.user_id
+    </select>
+
+    <select id="get_follow_detail" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+         SELECT b.real_name user_name,b.phone_number,b.sex,b.user_from,b.first_time,b.info,b.type user_type,a.`name` woker_name,a.type woker_type
+         FROM
+        (SELECT b.real_name,b.phone_number,b.sex,b.user_from,a.first_time,a.belong_worker_id,b.type,a.info
+         FROM `woker_user_follow` a INNER JOIN user_info b WHERE a.user_id=b.id and a.id=#{follow_id}) b
+         INNER JOIN
+         qlzf_shenghe a
+         WHERE b.belong_worker_id=a.id
+    </select>
+
+    <select id="get_user_shops" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+      SELECT id,title FROM `user_shop` WHERE user_id=#{user_id};
+    </select>
+
+    <select id="get_user_wantsShops" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+      SELECT id FROM `user_wantshop` WHERE user_id=#{user_id};
+    </select>
+
+</mapper>

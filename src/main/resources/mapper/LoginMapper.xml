@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.mycompany.qlzf_hous_keeper.mapper.LoginMapper">
+    <select id="checkUser" resultType="java.util.HashMap" parameterType="Woker" >
+        select * from qlzf_shenghe where name =#{name} and password=#{password};
+    </select>
+
+    <select id="get_myInfo" resultType="java.util.HashMap" parameterType="java.util.HashMap" >
+        select * from qlzf_shenghe where id =#{id} ;
+    </select>
+
+    <update id="update_tel" parameterType="Woker">
+        update qlzf_shenghe set tel=#{tel},
+        <if  test="e_mail!=null and e_mail!=''">
+            e_mail=#{e_mail},
+        </if>
+        city=#{city},name=#{name}, sex=#{sex},pic_num=#{pic_num} where id=#{id}
+    </update>
+
+</mapper>

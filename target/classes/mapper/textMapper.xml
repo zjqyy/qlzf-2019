@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.FBD.persistence.TokenPersistence">
+    <select id="getWorkerTel" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        SELECT
+	tel
+FROM
+	qlzf_shenghe b
+INNER JOIN (
+	SELECT
+		user_belong
+	FROM
+		user_info b
+	INNER JOIN (
+		SELECT
+			user_id
+		FROM
+			`user_wantshop`
+		WHERE
+			id = #{shop_id}
+	) a
+	WHERE
+		a.user_id = b.id
+) a
+WHERE
+	a.user_belong = b.id
+    </select>
+<select id="getShopId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+    SELECT id FROM `user_wantshop`;
+</select>
+
+</mapper>
